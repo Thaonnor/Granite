@@ -19,35 +19,78 @@ local Granite = ns.Granite
 
 function Granite:RegisterSettings()
     if not Settings then return end
-
     if self.settingsCategory then return end -- don't double-register
 
     local addon = self -- capture for closures
 
-    local category = Settings.RegisterVerticalLayoutCategory("Granite")
+    -- Root
+    local root = Settings.RegisterVerticalLayoutCategory("Granite")
 
-    local function GetValue()
-        return addon.db and addon.db.profile and addon.db.profile.placeholderOption or true
-    end
+    -- Subcategories
+    local general = Settings.RegisterVerticalLayoutCategory("General")
+    local player = Settings.RegisterVerticalLayoutCategory("Player")
 
-    local function SetValue(value)
-        if addon.db and addon.db.profile then
-            addon.db.profile.placeholderOption = value
+    -- ===========
+    -- General
+    -- ===========
+    do
+        local function GetEnabled()
+            return addon.db and addon.db.profile and addon.db.profile.enabled ~= false
         end
+
+        local function SetEnabled(value)
+            if addon.db and addon.db.profile then
+                addon.db.profile.enabled = value
+                if addon.ApplyAllSettings then addon:ApplyAllSettings() end
+            end
+        end
+
+        local enabledSetting = Settings.RegisterProxySetting(
+            general,
+            "GRANITE_ENABLED",
+            Settings.VarType.Boolean,
+            "Enable Granite",
+            true,
+            GetEnabled,
+            SetEnabled
+        )
+
+        Settings.CreateCheckbox(general, enabledSetting)
     end
 
-    local setting = Settings.RegisterProxySetting(
-        category, 
-        "GRANITE_PLACEHOLDER_OPTION",
-        Settings.VarType.Boolean, 
-        "Placeholder option", 
-        true, 
-        GetValue, 
-        SetValue
-    )
+    -- ===========
+    -- Player
+    -- ===========
+    do
+        local function GetPlayerEnabled()
+            local player = addon.db and addon.db.profile
+            return player and player.playerCastarEnabled ~= false
+        end
 
-    Settings.CreateCheckbox(category, setting)
-    Settings.RegisterAddOnCategory(category)
+        local function SetPlayerEnabled(value)
+            local player = addon.db and addon.db.profile
+            if player then
+                player.playerCastbarEnabled = value
+                if addon.playerBar then addon.playerBar:SetShown(value) end
+            end
+        end
 
-    addon.settingsCategory = category
+        local playerEnabledSetting = Settings.RegisterProxySetting(
+            player,
+            "GRANITE_PLAYER_CASTBAR_ENABLED",
+            Settings.VarType.Boolean,
+            "Enable Player Cast Bar",
+            true,
+            GetPlayerEnabled,
+            SetPlayerEnabled
+        )
+
+        Settings.CreateCheckbox(player, playerEnabledSetting)
+    end
+
+    -- Register everything
+    Settings.RegisterAddonCategory(root)
+
+    -- Save root to avoid double-registering
+    addon.settingsCategory = root
 end
