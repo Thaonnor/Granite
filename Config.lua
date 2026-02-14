@@ -14,6 +14,9 @@
 -- Registers the addon options with the Blizzard Settings panel (Escape > System > Settings).
 -- Granite.lua calls Granite:RegisterSettings() from OnEnable; this file implements it.
 
+local ADDON_NAME, ns = ...
+local Granite = ns.Granite
+
 function Granite:RegisterSettings()
     if not Settings then return end
     local category, layout = Settings.RegisterVerticalLayoutCategory("Granite")

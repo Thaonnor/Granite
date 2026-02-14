@@ -11,7 +11,10 @@
 -- but WITHOUT ANY WARRANTY. See the COPYING file for full license text.
 ]]
 
-local Granite = LibStub("AceAddon-3.0"):NewAddon("Granite", "AceConsole-3.0")
+local ADDON_NAME, ns = ...
+local Granite = LibStub("AceAddon-3.0"):NewAddon(ADDON_NAME, "AceConsole-3.0")
+
+ns.Granite = Granite
 
 function Granite:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("GraniteDB", {
