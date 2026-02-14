@@ -86,6 +86,32 @@ function Granite:RegisterSettings()
         )
 
         Settings.CreateCheckbox(player, playerEnabledSetting)
+
+        local function GetPlayerTest()
+            return addon.db.profile.playerCastbarTest
+        end
+
+        local function SetPlayerTest(value)
+            local p = addon.db and addon.db.profile
+            if p then
+                p.playerCastbarTest = value
+                if addon.playerBar and addon.playerBar.SetTestMode then
+                    addon.playerBar:SetTestMode(value)
+                end
+            end
+        end
+
+        local playerTestSetting = Settings.RegisterProxySetting(
+            player,
+            "GRANITE_PLAYER_CASTBAR_TEST",
+            Settings.VarType.Boolean,
+            "Show Test Cast",
+            false,
+            GetPlayerTest,
+            SetPlayerTest
+        )
+
+        Settings.CreateCheckbox(player, playerTestSetting)
     end
 
     -- Save root to avoid double-registering
