@@ -27,6 +27,9 @@ function Granite:OnInitialize()
 end
 
 function Granite:OnSlashCommand(input)
+    -- normalize input
+    input = (input or ""):lower():match("^%s*(.-)%s*$")
+
     if input == "" or input == "config" then
         if self.settingsCategory then
             Settings.OpenToCategory(self.settingsCategory:GetID())
@@ -44,16 +47,5 @@ function Granite:OnEnable()
     self:Print("Granite loaded. Use /granite to configure.")
     self:RegisterSettings()
 
-    local frame = CreateFrame("Frame", "GraniteTestFrame", UIParent)
-    frame:SetSize(200, 20)
-    frame:SetPoint("CENTER")
-    frame:Show()
-
-    local bg = frame:CreateTexture(nil, "BACKGROUND")
-    bg:SetAllPoints(true)
-    bg:SetColorTexture(1, 0, 0, 0.35) -- red, 35% alpha
-
-    local text = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    text:SetPoint("CENTER")
-    text:SetText("Granite Test Frame")
+    self:EnablePlayerModule()
 end

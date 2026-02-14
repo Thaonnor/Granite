@@ -19,20 +19,35 @@ local Granite = ns.Granite
 
 function Granite:RegisterSettings()
     if not Settings then return end
-    local category, layout = Settings.RegisterVerticalLayoutCategory("Granite")
+
+    if self.settingsCategory then return end -- don't double-register
+
+    local addon = self -- capture for closures
+
+    local category = Settings.RegisterVerticalLayoutCategory("Granite")
 
     local function GetValue()
-        return self.db.profile.placeholderOption
+        return addon.db and addon.db.profile and addon.db.profile.placeholderOption or true
     end
 
     local function SetValue(value)
-        self.db.profile.placeholderOption = value
+        if addon.db and addon.db.profile then
+            addon.db.profile.placeholderOption = value
+        end
     end
 
-    local setting = Settings.RegisterProxySetting(category, "GRANITE_PLACEHOLDER_OPTION",
-        Settings.VarType.Boolean, "Placeholder option", true, GetValue, SetValue)
-    Settings.CreateCheckbox(category, setting)
+    local setting = Settings.RegisterProxySetting(
+        category, 
+        "GRANITE_PLACEHOLDER_OPTION",
+        Settings.VarType.Boolean, 
+        "Placeholder option", 
+        true, 
+        GetValue, 
+        SetValue
+    )
 
+    Settings.CreateCheckbox(category, setting)
     Settings.RegisterAddOnCategory(category)
-    self.settingsCategory = category
+
+    addon.settingsCategory = category
 end
