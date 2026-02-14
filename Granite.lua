@@ -14,13 +14,42 @@
 local Granite = LibStub("AceAddon-3.0"):NewAddon("Granite", "AceConsole-3.0")
 
 function Granite:OnInitialize()
-    self.db = LibStub("AceDB-3.0"):New("GraniteDB", { profile = { modules = { ["*"] = true } } }, true)
+    self.db = LibStub("AceDB-3.0"):New("GraniteDB", {
+        profile = {
+            modules = { ["*"] = true },
+            placeholderOption = true,
+        },
+    }, true)
     self:RegisterChatCommand("granite", "OnSlashCommand")
+end
+
+function Granite:RegisterSettings()
+    if not Settings then return end
+    local category, layout = Settings.RegisterVerticalLayoutCategory("Granite")
+
+    local function GetValue()
+        return self.db.profile.placeholderOption
+    end
+
+    local function SetValue(value)
+        self.db.profile.placeholderOption = value
+    end
+
+    local setting = Settings.RegisterProxySetting(category, "GRANITE_PLACEHOLDER_OPTION",
+        Settings.VarType.Boolean, "Placeholder option", true, GetValue, SetValue)
+    Settings.CreateCheckbox(category, setting)
+
+    Settings.RegisterAddOnCategory(category)
+    self.settingsCategory = category
 end
 
 function Granite:OnSlashCommand(input)
     if input == "" or input == "config" then
-        self:Print("Granite options will go here. Use /granite lock to unlock bars.")
+        if self.settingsCategory then
+            Settings.OpenToCategory(self.settingsCategory:GetID())
+        else
+            self:Print("Granite options will go here. Use /granite lock to unlock bars.")
+        end
     elseif input == "lock" then
         self:Print("Lock/unlock will be implemented with the cast bars.")
     else
@@ -30,4 +59,18 @@ end
 
 function Granite:OnEnable()
     self:Print("Granite loaded. Use /granite to configure.")
+    self:RegisterSettings()
+
+    local frame = CreateFrame("Frame", "GraniteTestFrame", UIParent)
+    frame:SetSize(200, 20)
+    frame:SetPoint("CENTER")
+    frame:Show()
+
+    local bg = frame:CreateTexture(nil, "BACKGROUND")
+    bg:SetAllPoints(true)
+    bg:SetColorTexture(1, 0, 0, 0.35) -- red, 35% alpha
+
+    local text = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    text:SetPoint("CENTER")
+    text:SetText("Granite Test Frame")
 end
