@@ -13,3 +13,6 @@ desktop.ini
 # WoW / Addon (if you ever generate or cache anything)
 *.bak
 *.tmp
+
+# Embedded libs (for local testing; clone into libs/ as needed)
+libs/
