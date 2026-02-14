@@ -7,23 +7,14 @@
 ## SavedVariables: GraniteDB
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, SharedMedia
 
-# Embedded Ace3 (load first when libs/Ace3 present; same order as Ace3.toc)
+# Embedded Ace3 (load first when libs/Ace3 present)
 libs\Ace3\LibStub\LibStub.lua
 libs\Ace3\CallbackHandler-1.0\CallbackHandler-1.0.xml
 libs\Ace3\AceAddon-3.0\AceAddon-3.0.xml
 libs\Ace3\AceEvent-3.0\AceEvent-3.0.xml
-libs\Ace3\AceTimer-3.0\AceTimer-3.0.xml
-libs\Ace3\AceBucket-3.0\AceBucket-3.0.xml
-libs\Ace3\AceHook-3.0\AceHook-3.0.xml
 libs\Ace3\AceDB-3.0\AceDB-3.0.xml
-libs\Ace3\AceDBOptions-3.0\AceDBOptions-3.0.xml
-libs\Ace3\AceLocale-3.0\AceLocale-3.0.xml
 libs\Ace3\AceConsole-3.0\AceConsole-3.0.xml
 libs\Ace3\AceGUI-3.0\AceGUI-3.0.xml
-libs\Ace3\AceConfig-3.0\AceConfig-3.0.xml
-libs\Ace3\AceComm-3.0\AceComm-3.0.xml
-libs\Ace3\AceTab-3.0\AceTab-3.0.xml
-libs\Ace3\AceSerializer-3.0\AceSerializer-3.0.xml
 
 # Core (load order matters)
 Granite.lua
