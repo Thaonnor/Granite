@@ -23,12 +23,13 @@ function Granite:RegisterSettings()
 
     local addon = self -- capture for closures
 
-    -- Root
+    -- Create & register root category first
     local root = Settings.RegisterVerticalLayoutCategory("Granite")
+    Settings.RegisterAddOnCategory(root)
 
-    -- Subcategories
-    local general = Settings.RegisterVerticalLayoutCategory("General")
-    local player = Settings.RegisterVerticalLayoutCategory("Player")
+    -- Create subcategories under registered parent
+    local general = Settings.RegisterVerticalLayoutSubcategory(root, "General")
+    local player = Settings.RegisterVerticalLayoutSubcategory(root, "Player")
 
     -- ===========
     -- General
@@ -63,14 +64,14 @@ function Granite:RegisterSettings()
     -- ===========
     do
         local function GetPlayerEnabled()
-            local player = addon.db and addon.db.profile
-            return player and player.playerCastarEnabled ~= false
+            local p = addon.db and addon.db.profile
+            return p and p.playerCastbarEnabled ~= false
         end
 
         local function SetPlayerEnabled(value)
-            local player = addon.db and addon.db.profile
-            if player then
-                player.playerCastbarEnabled = value
+            local p = addon.db and addon.db.profile
+            if p then
+                p.playerCastbarEnabled = value
                 if addon.playerBar then addon.playerBar:SetShown(value) end
             end
         end
@@ -87,9 +88,6 @@ function Granite:RegisterSettings()
 
         Settings.CreateCheckbox(player, playerEnabledSetting)
     end
-
-    -- Register everything
-    Settings.RegisterAddOnCategory(root)
 
     -- Save root to avoid double-registering
     addon.settingsCategory = root
