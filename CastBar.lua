@@ -24,6 +24,7 @@ function Granite.CastBar:Create(name, parent)
     -- Statusbar (the fill)
     frame.Status = CreateFrame("StatusBar", nil, frame)
     frame.Status:SetAllPoints(true)
+    frame.Status:SetFrameLevel(frame:GetFrameLevel() + 1) -- above BG, below Text/Icon
 
     -- Background
     frame.BG = frame:CreateTexture(nil, "BACKGROUND")
