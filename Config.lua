@@ -89,7 +89,7 @@ function Granite:RegisterSettings()
     end
 
     -- Register everything
-    Settings.RegisterAddonCategory(root)
+    Settings.RegisterAddOnCategory(root)
 
     -- Save root to avoid double-registering
     addon.settingsCategory = root
