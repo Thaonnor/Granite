@@ -1,5 +1,5 @@
 ## Title: Granite
-## Interface: 12000
+## Interface: 120001
 ## Notes: Modular casting bar for Retail WoW (12.0.1). Inspired by Quartz.
 ## Author: Thaonnor
 ## Version: 0.1.0

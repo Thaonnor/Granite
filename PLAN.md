@@ -9,7 +9,7 @@ isProject: false
 
 ## Context
 
-- **Quartz** is GPLv2, modular, and uses Ace3 + LibSharedMedia. It is unmaintained and breaks under 12.0.0/12.0.1 API changes.
+- **Quartz** is GPLv2, modular, and uses Ace3 + LibSharedMedia. It is not yet updated and breaks under 12.0.0/12.0.1 API changes.
 - **Granite** will be a from-scratch addon inspired by Quartz: same idea (modular cast bars), new code and structure, compatible with 12.0.
 - **Retail only**: Granite targets **Retail World of Warcraft only** (12.0.1 and current patch). There is no plan to support Classic, Wrath Classic, or other clients. Implementation should use only modern 12.0.1 UI methods and Retail API semantics—no `WOW_PROJECT_ID` branching, no LibClassicCasterino, no Classic-specific TOC or return-value handling.
 - **License**: GPLv2. Repository must be open source. If you copy any Quartz code verbatim or closely, preserve Quartz's copyright notices in those files and distribute under GPLv2.
