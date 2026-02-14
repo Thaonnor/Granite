@@ -36,7 +36,7 @@ function Granite:RegisterSettings()
     -- ===========
     do
         local function GetEnabled()
-            return addon.db and addon.db.profile and addon.db.profile.enabled ~= false
+            return addon.db.profile.enabled
         end
 
         local function SetEnabled(value)
@@ -64,8 +64,7 @@ function Granite:RegisterSettings()
     -- ===========
     do
         local function GetPlayerEnabled()
-            local p = addon.db and addon.db.profile
-            return p and p.playerCastbarEnabled ~= false
+            return addon.db.profile.playerCastbarEnabled
         end
 
         local function SetPlayerEnabled(value)

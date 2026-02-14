@@ -19,8 +19,9 @@ ns.Granite = Granite
 function Granite:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("GraniteDB", {
         profile = {
-            modules = { ["*"] = true },
-            placeholderOption = true,
+            enabled = true,
+            playerCastbarEnabled = true,
+            playerCastbarTest = false
         },
     }, true)
     self:RegisterChatCommand("granite", "OnSlashCommand")
