@@ -1,5 +1,5 @@
 --[[
--- Granite - Cast bar frame template
+-- Granite - Player cast bar module
 -- Copyright (C) 2025 Thaonnor
 --
 -- This program is free software; you can redistribute it and/or modify
@@ -11,6 +11,13 @@
 -- but WITHOUT ANY WARRANTY. See the COPYING file for full license text.
 ]]
 
--- Shared cast bar frame logic will live here.
--- Modules (Player, Target, etc.) will create bars from this template.
--- Stub for now so the addon loads.
+local ADDON_NAME, ns = ...
+local Granite = ns.Granite
+
+function Granite:EnablePlayerModule()
+    self.playerBar = self.CastBar:Create("GranitePlayerCastBar", UIParent)
+    self.playerBar:SetPoint("CENTER", 0, -200)
+    self.playerBar:Show()
+
+    -- Later: register events and drive updates
+end

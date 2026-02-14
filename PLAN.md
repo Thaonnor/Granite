@@ -38,7 +38,7 @@ Granite/
   README.md
   Granite.lua           # Entry, AceAddon core
   Config.lua            # AceConfig-3.0 options
-  CastBarTemplate.lua   # Reusable cast bar frame logic
+  CastBar.lua   # Reusable cast bar frame logic
   GraniteStatusBar.lua   # Optional: status bar widget (or use default)
   locale/
     locale.xml
@@ -76,7 +76,7 @@ Either **embed** these under `libs/` (like Quartz) or depend on them as **Option
 - `## Interface: 12000` (Retail 12.0.1 only; no Classic or other client TOC files).
 - `## OptionalDeps: Ace3, LibSharedMedia-3.0, SharedMedia` (if not embedding).
 - `## SavedVariables: GraniteDB`
-- Load order: LibStub → CallbackHandler → Ace* → LibSharedMedia → your Core (Granite.lua, Config.lua, CastBarTemplate, …) → modules.
+- Load order: LibStub → CallbackHandler → Ace* → LibSharedMedia → your Core (Granite.lua, Config.lua, CastBar.lua, …) → modules.
 
 ---
 
@@ -91,7 +91,7 @@ Either **embed** these under `libs/` (like Quartz) or depend on them as **Option
 - **Empower / charge spells**: Use `GetUnitEmpowerHoldAtMaxTime(unit)` and `GetUnitEmpowerStageDuration(unit, stage)` for player empower bars; handle `numStages` from channel/cast APIs as in current Retail.
 - **Secure frames**: Cast bar *display* does not require SecureActionButtonTemplate. Avoid secure-only attributes or macrotext unless you add a dedicated secure click path (e.g. cancel cast). Use only modern 12.0.1 UI patterns.
 
-Design the core and CastBarTemplate around Retail-only, 12.0.1 APIs so there is no legacy or multi-client code paths.
+Design the core and CastBar around Retail-only, 12.0.1 APIs so there is no legacy or multi-client code paths.
 
 ---
 
@@ -102,7 +102,7 @@ flowchart LR
   subgraph core [Core]
     Granite[Granite.lua]
     Config[Config.lua]
-    CastBarTemplate[CastBarTemplate.lua]
+    CastBar[CastBar.lua]
   end
   subgraph mods [Modules]
     Player[Player]
@@ -112,20 +112,20 @@ flowchart LR
     Other[Latency GCD Buff etc]
   end
   Granite --> Config
-  Granite --> CastBarTemplate
+  Granite --> CastBar
   Granite --> mods
-  Player --> CastBarTemplate
-  Target --> CastBarTemplate
-  Focus --> CastBarTemplate
-  Pet --> CastBarTemplate
-  Other --> CastBarTemplate
+  Player --> CastBar
+  Target --> CastBar
+  Focus --> CastBar
+  Pet --> CastBar
+  Other --> CastBar
 ```
 
 
 
 - **Granite.lua**: AceAddon-3.0 addon; creates `GraniteDB` via AceDB-3.0; defines default profile (bar positions, colors, which modules are on, etc.); registers `/granite` (AceConsole-3.0); applies settings and enable/disable to modules; provides unlock/lock for bar movement; optional config mode callback for Blizzard's Edit Mode if desired.
 - **Config.lua**: Uses AceConfig-3.0 to build the options table (per-module toggles, bar size/position/alpha/strata, fonts, textures, borders, colors). Can use AceGUI-3.0-SharedMediaWidgets for LSM font/statusbar/border selectors. Options should read/write the same profile used by the core and modules.
-- **CastBarTemplate.lua**: Shared frame "template" used by bar modules. Responsibilities:
+- **CastBar.lua**: Shared frame "template" used by bar modules. Responsibilities:
   - Create one frame per bar (player, target, focus, pet, mirror, etc.) with: status bar, icon, spell name text, time text, spark, optional shield for not-interruptible.
   - OnUpdate: update bar value, spark position, and time text (count up or down) from `startTime`/`endTime`/`delay`; handle fade-out when cast ends.
   - Event handlers: map UNIT_SPELLCAST_* and UNIT_SPELLCAST_CHANNEL_* (and EMPOWER_*) to set start/end/delay, interruptible state, icon, name; call UnitCastingInfo/UnitChannelInfo using Retail 12.0.1 return signatures only.
@@ -169,13 +169,13 @@ Implement in phases: core + Player first, then Target/Focus/Pet, then Latency/GC
 - Create repo, GPLv2, README, copyright headers.
 - Set up Granite.toc (Interface 12000), SavedVariables, and lib loading (embedded or OptionalDeps).
 - Implement Granite.lua (addon core, defaults, profile, `/granite`), Config.lua (minimal options: enable Granite, enable Player module).
-- Implement CastBarTemplate: one bar frame, UnitCastingInfo/UnitChannelInfo with Retail 12.0.1 return parsing only, UNIT_SPELLCAST_* (and CHANNEL_*, EMPOWER_*) events, OnUpdate, basic styling (size, position, texture from LSM, font).
+- Implement CastBar: one bar frame, UnitCastingInfo/UnitChannelInfo with Retail 12.0.1 return parsing only, UNIT_SPELLCAST_* (and CHANNEL_*, EMPOWER_*) events, OnUpdate, basic styling (size, position, texture from LSM, font).
 - Implement Player module: one bar bound to `player`, hide Blizzard casting bar when enabled.
 - Test in Retail 12.0.1: cast, channel, interrupt, fail, empower if applicable.
 
 **Phase 2 – More unit bars and options**
 
-- Add Target, Focus, Pet modules (each uses CastBarTemplate with its unit).
+- Add Target, Focus, Pet modules (each uses CastBar with its unit).
 - Extend Config: per-bar options (width, height, position, alpha, strata, icon, text position, colors, not-interruptible styling).
 - Unlock/lock bar movement (LibWindow if used); save/restore positions.
 
@@ -188,7 +188,7 @@ Implement in phases: core + Player first, then Target/Focus/Pet, then Latency/GC
 
 **Phase 4 – Remaining modules**
 
-- Mirror, Timer, Swing, Buff (if desired), Interrupt, Range, Flight, EnemyCasts, Tradeskill. Implement one by one, reusing CastBarTemplate where applicable and hooking only the events/callbacks needed.
+- Mirror, Timer, Swing, Buff (if desired), Interrupt, Range, Flight, EnemyCasts, Tradeskill. Implement one by one, reusing CastBar where applicable and hooking only the events/callbacks needed.
 
 **Phase 5 – Polish**
 
@@ -211,6 +211,6 @@ Implement in phases: core + Player first, then Target/Focus/Pet, then Latency/GC
 - **Open source**: Publish repo (e.g. GitHub) with full source and clear license.
 - **Retail 12.0.1 only**: Interface 12000; UnitCastingInfo/UnitChannelInfo with Retail return signatures only; all UNIT_SPELLCAST_* (including EMPOWER_*); empower helpers; no Classic or multi-client support; no reliance on removed/deprecated secure or macro APIs; modern 12.0.1 UI methods only.
 - **Stack**: Ace3 + LibSharedMedia (and optionally LibWindow, LibDualSpec); embed or document deps.
-- **Design**: Core + CastBarTemplate + modules; one template, many modules; implement in phases (Player first, then other bars and features).
+- **Design**: Core + CastBar + modules; one template, many modules; implement in phases (Player first, then other bars and features).
 
 This plan gives you a clear path to a Quartz-inspired, 12.0-compatible cast bar addon that stays GPLv2 and respects Quartz's copyright if you reuse any of their code.

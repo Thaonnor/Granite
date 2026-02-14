@@ -19,13 +19,13 @@ libs\Ace3\AceGUI-3.0\AceGUI-3.0.xml
 # Core (load order matters)
 Granite.lua
 Config.lua
-CastBarTemplate.lua
+CastBar.lua
 
 # Locale (when we add it)
 # locale\locale.xml
 
 # Modules
-# modules\Player.lua
+modules\Player.lua
 # modules\Target.lua
 # modules\Focus.lua
 # modules\Pet.lua
