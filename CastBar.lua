@@ -31,12 +31,12 @@ function Granite.CastBar:Create(name, parent)
     frame.BG:SetAllPoints(true)
 
     -- Text
-    frame.Text = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    frame.Text = frame.Status:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     frame.Text:SetPoint("LEFT", 6, 0)
     frame.Text:SetDrawLayer("OVERLAY", 7)
 
     -- Icon (optional)
-    frame.Icon = frame:CreateTexture(nil, "ARTWORK")
+    frame.Icon = frame.Status:CreateTexture(nil, "ARTWORK")
     frame.Icon:SetSize(24, 24)
     frame.Icon:SetPoint("RIGHT", frame, "LEFT", -6, 0)
     frame.Icon:Hide()
