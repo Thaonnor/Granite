@@ -16,7 +16,7 @@ local Granite = ns.Granite
 
 function Granite:EnablePlayerModule()
     self.playerBar = self.CastBar:Create("GranitePlayerCastBar", UIParent)
-    self.playerBar:SetPoint("CENTER", 0, -200)
+    self.playerBar:SetPoint("CENTER", 0, -275)
     self.playerBar:Show()
 
     -- Later: register events and drive updates

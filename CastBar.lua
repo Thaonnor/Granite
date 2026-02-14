@@ -37,11 +37,48 @@ function Granite.CastBar:Create(name, parent)
     frame.Icon = frame:CreateTexture(nil, "ARTWORK")
     frame.Icon:SetSize(24, 24)
     frame.Icon:SetPoint("RIGHT", frame, "LEFT", -6, 0)
+    frame.Icon:Hide()
 
     function frame:ApplyStyle(style)
         -- style.font, style.texture, style.colors, etc.
         -- use LSM later if you want
     end
+
+    function frame:SetTestMode(enabled)
+        self._testMode = enabled and true or false
+        if self._testMode then
+            self:Show()
+
+            -- Basic visuals so I can see it working
+            self.Status:SetMinMaxValues(0, 1)
+            self.Status:SetValue(0.35)
+            self.Status:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+
+            self.BG:SetColorTexture(0, 0, 0, 0.35)
+
+            self.Text:SetText("Test Cast")
+
+            self.Icon:SetTexture(136243) -- question mark icon
+            self.Icon:Show()
+        else
+            self:Hide()
+        end
+    end
+
+    frame:SetScript("OnUpdate", function(self, elapsed)
+        if not self._testMode then return end
+        
+        -- lazy init (in case test mode was enabled before reload)
+        self._testStart = self._testStart or GetTime()
+        self._testDuration = self._testDuration or 3.0
+
+        local t = GetTime() - self._testStart
+        local dur = self._testDuration
+        local p = (t % dur) / dur
+
+        self.Status:SetMinMaxValues(0, 1)
+        self.Status:SetValue(p)
+    end)
 
     return frame
 end
