@@ -24,11 +24,15 @@ function Granite.CastBar:Create(name, parent)
     -- Statusbar (the fill)
     frame.Status = CreateFrame("StatusBar", nil, frame)
     frame.Status:SetAllPoints(true)
+    frame.Status:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+    frame.Status:SetMinMaxValues(0, 1)
+    frame.Status:SetValue(0.01)
     frame.Status:SetFrameLevel(frame:GetFrameLevel() + 1) -- above BG, below Text/Icon
 
     -- Background
     frame.BG = frame:CreateTexture(nil, "BACKGROUND")
     frame.BG:SetAllPoints(true)
+    frame.BG:SetColorTexture(0, 0, 0, 0.35)
 
     -- Text
     frame.Text = frame.Status:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -68,15 +72,43 @@ function Granite.CastBar:Create(name, parent)
     end
 
     frame:SetScript("OnUpdate", function(self, elapsed)
-        if not self._testMode then return end
-        
-        -- lazy init (in case test mode was enabled before reload)
-        self._testStart = self._testStart or GetTime()
-        self._testDuration = self._testDuration or 3.0
+        -- Test mode
+        if self._testMode then
+            -- lazy init (in case test mode was enabled before reload)
+            self._testStart = self._testStart or GetTime()
+            self._testDuration = self._testDuration or 3.0
 
-        local t = GetTime() - self._testStart
-        local dur = self._testDuration
-        local p = (t % dur) / dur
+            local t = GetTime() - self._testStart
+            local dur = self._testDuration
+            local p = (t % dur) / dur
+
+            self.Status:SetMinMaxValues(0, 1)
+            self.Status:SetValue(p)
+            return
+        end
+
+        -- Real cast mode
+        if not self._casting or not self._startMS or not self._endMS then return end   
+
+        local nowMS = GetTime() * 1000
+        local duration = self._endMS - self._startMS
+        if duration <= 0 then return end
+
+        local p = (nowMS - self._startMS) / duration
+
+        -- clamp + end
+        if p >= 1 then
+            self._casting = false
+            self:Hide()
+            return
+        elseif p < 0 then
+            p = 0
+        end
+
+        -- channels drain
+        if self._isChannel then
+            p = 1 - p
+        end
 
         self.Status:SetMinMaxValues(0, 1)
         self.Status:SetValue(p)

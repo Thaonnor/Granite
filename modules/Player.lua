@@ -15,9 +15,80 @@ local ADDON_NAME, ns = ...
 local Granite = ns.Granite
 
 function Granite:EnablePlayerModule()
+    -- Create the bar
     self.playerBar = self.CastBar:Create("GranitePlayerCastBar", UIParent)
-    self.playerBar:SetPoint("CENTER", 0, -275)
-    self.playerBar:Show()
+    self.playerBar:SetShown(self.db.profile.playerCastbarEnabled)
 
-    -- Later: register events and drive updates
+    -- Position
+    self.playerBar:ClearAllPoints()
+    self.playerBar:SetPoint("CENTER", UIParent, 0, -275)
+
+    -- Apply saved test mode on startup
+    if self.db.profile.playerCastbarTest and self.playerBar.SetTestMode then
+        self.playerBar:SetTestMode(true)
+    end
+
+    -- Event driver
+    local driver = CreateFrame("Frame")
+    driver:RegisterUnitEvent("UNIT_SPELLCAST_START", "player")
+    driver:RegisterUnitEvent("UNIT_SPELLCAST_STOP", "player")
+    driver:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", "player")
+    driver:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player")
+    driver:RegisterUnitEvent("UNIT_SPELLCAST_DELAYED", "player")
+
+    -- Channel Events
+    driver:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", "player")
+    driver:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", "player")
+    driver:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "player")
+
+    -- Minimal handler: refresh bar from UnitCastingInfo / UnitChannelInfo
+    driver:SetScript("OnEvent", function()
+        if not Granite.db.profile.playerCastbarEnabled then
+            Granite.playerBar:Hide()
+            return
+        end
+
+        -- Guard (so test mode works)
+        if Granite.playerBar._testMode then
+            return
+        end
+
+        Granite:UpdatePlayerCastBar()
+    end)
+
+    -- Initial refresh (in case we're already casting on reload)
+    self:UpdatePlayerCastBar()
+end
+
+function Granite:UpdatePlayerCastBar()
+    local bar = self.playerBar
+    if not bar then return end
+
+    local name, _, texture, startMS, endMS = UnitCastingInfo("player")
+    local isChannel = false
+
+    if not name then
+        name, _, texture, startMS, endMS = UnitChannelInfo("player")
+        isChannel = name ~= nil
+    end
+
+    if not name then
+        bar._casting = false
+        bar:Hide()
+        return
+    end
+
+    bar:Show()
+    bar.Text:SetText(name)
+
+    if bar.Icon then
+        bar.Icon:SetTexture(texture)
+        bar.Icon:SetShown(texture ~= nil)
+    end
+
+    -- Store timing so Cast Bar OnUpdate can drive progress
+    bar._casting = true
+    bar._startMS = startMS
+    bar._endMS = endMS
+    bar._isChannel = isChannel
 end
