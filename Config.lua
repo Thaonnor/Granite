@@ -112,6 +112,45 @@ function Granite:RegisterSettings()
         )
 
         Settings.CreateCheckbox(player, playerTestSetting)
+
+        -- Texture dropdown (only if LSM is available)
+        if addon.LSM then
+            local function GetPlayerTexture()
+                return addon.db.profile.playerCastbarTexture or "Blizzard"
+            end
+
+            local function SetPlayerTexture(value)
+                local p = addon.db and addon.db.profile
+                if p then
+                    p.playerCastbarTexture = value
+                    if addon.playerBar and addon.ApplyPlayerBarStyle then
+                        addon:ApplyPlayerBarStyle()
+                    end
+                end
+            end
+
+            local textureSetting = Settings.RegisterProxySetting(
+                player,
+                "GRANITE_PLAYER_CASTBAR_TEXTURE",
+                Settings.VarType.String,
+                "Bar Texture",
+                "Blizzard",
+                GetPlayerTexture,
+                SetPlayerTexture
+            )
+
+            -- Build dropdown options from LSM
+            local function GetTextureOptions()
+                local container = Settings.CreateControlTextContainer()
+                local textures = addon.LSM:List("statusbar")
+                for _, textureName in ipairs(textures) do
+                    container:Add(textureName, textureName)
+                end
+                return container:GetData()
+            end
+
+            Settings.CreateDropdown(player, textureSetting, GetTextureOptions, "Select a texture")
+        end
     end
 
     -- Save root to avoid double-registering

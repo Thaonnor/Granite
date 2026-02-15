@@ -28,6 +28,14 @@ function Granite:EnablePlayerModule()
         self.playerBar:SetTestMode(true)
     end
 
+    -- Apply initial texture
+    if self.LSM and self.db.profile.playerCastbarTexture then
+        local texturePath = self.LSM:Fetch("statusbar", self.db.profile.playerCastbarTexture)
+        if texturePath and self.playerBar.ApplyStyle then
+            self.playerBar:ApplyStyle(texturePath)
+        end
+    end
+
     -- Event driver
     local driver = CreateFrame("Frame")
     driver:RegisterUnitEvent("UNIT_SPELLCAST_START", "player")

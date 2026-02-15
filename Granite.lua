@@ -21,10 +21,14 @@ function Granite:OnInitialize()
         profile = {
             enabled = true,
             playerCastbarEnabled = true,
-            playerCastbarTest = false
+            playerCastbarTest = false,
+            playerCastbarTexture = "Blizzard"
         },
     }, true)
     self:RegisterChatCommand("granite", "OnSlashCommand")
+
+    -- Initialize LibSharedMedia
+    self.LSM = LibStub("LibSharedMedia-3.0", true)
 end
 
 function Granite:OnSlashCommand(input)
@@ -49,4 +53,15 @@ function Granite:OnEnable()
     self:RegisterSettings()
 
     self:EnablePlayerModule()
+end
+
+function Granite:ApplyPlayerBarStyle()
+    if not self.playerBar or not self.LSM then return end
+
+    local textureName = self.db.profile.playerCastbarTexture or "Blizzard"
+    local texturePath = self.LSM:Fetch("statusbar", textureName)
+
+    if texturePath and self.playerBar.ApplyStyle then
+        self.playerBar:ApplyStyle(texturePath)
+    end
 end

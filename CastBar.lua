@@ -45,9 +45,10 @@ function Granite.CastBar:Create(name, parent)
     frame.Icon:SetPoint("RIGHT", frame, "LEFT", -6, 0)
     frame.Icon:Hide()
 
-    function frame:ApplyStyle(style)
-        -- style.font, style.texture, style.colors, etc.
-        -- use LSM later if you want
+    function frame:ApplyStyle(texture)
+        if texture then
+            self.Status:SetStatusBarTexture(texture)
+        end
     end
 
     function frame:SetTestMode(enabled)

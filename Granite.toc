@@ -16,6 +16,9 @@ libs\Ace3\AceDB-3.0\AceDB-3.0.xml
 libs\Ace3\AceConsole-3.0\AceConsole-3.0.xml
 libs\Ace3\AceGUI-3.0\AceGUI-3.0.xml
 
+# LibSharedMedia-3.0
+libs\LibSharedMedia-3.0\lib.xml
+
 # Core (load order matters)
 Granite.lua
 Config.lua
