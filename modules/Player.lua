@@ -21,7 +21,7 @@ function Granite:EnablePlayerModule()
 
     -- Position
     self.playerBar:ClearAllPoints()
-    self.playerBar:SetPoint("CENTER", UIParent, 0, -275)
+    self.playerBar:SetPoint("CENTER", UIParent, "CENTER", 0, -275)
 
     -- Apply saved test mode on startup
     if self.db.profile.playerCastbarTest and self.playerBar.SetTestMode then
@@ -74,11 +74,17 @@ function Granite:UpdatePlayerCastBar()
 
     if not name then
         bar._casting = false
-        bar:Hide()
+        if bar.StartFade then
+            bar:StartFade()
+        else
+            bar:Hide()
+        end
         return
     end
 
     bar:Show()
+    bar._fading = false  -- Clear fade state
+    bar:SetAlpha(1)      -- Reset to full opacity
     bar.Text:SetText(name)
 
     if bar.Icon then

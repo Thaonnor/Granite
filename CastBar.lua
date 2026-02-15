@@ -71,6 +71,12 @@ function Granite.CastBar:Create(name, parent)
         end
     end
 
+    function frame:StartFade()
+        self._casting = false
+        self._fading = true
+        self._fadeStart = GetTime()
+    end
+
     frame:SetScript("OnUpdate", function(self, elapsed)
         -- Test mode
         if self._testMode then
@@ -88,30 +94,45 @@ function Granite.CastBar:Create(name, parent)
         end
 
         -- Real cast mode
-        if not self._casting or not self._startMS or not self._endMS then return end   
+        if self._casting and self._startMS and self._endMS then
+            local nowMS = GetTime() * 1000
+            local duration = self._endMS - self._startMS
 
-        local nowMS = GetTime() * 1000
-        local duration = self._endMS - self._startMS
-        if duration <= 0 then return end
+            if duration > 0 then
+                local p = (nowMS - self._startMS) / duration
 
-        local p = (nowMS - self._startMS) / duration
+                -- clamp + end
+                if p >= 1 then
+                    self:StartFade()
+                elseif p < 0 then
+                    p = 0
+                end
 
-        -- clamp + end
-        if p >= 1 then
-            self._casting = false
-            self:Hide()
+                -- channels drain
+                if self._isChannel then
+                    p = 1 - p
+                end
+
+                self.Status:SetMinMaxValues(0, 1)
+                self.Status:SetValue(p)
+            end
+        end
+
+        if self._fading then
+            local fadeDuration = 0.4
+            local t = GetTime() - (self._fadeStart or GetTime())
+            local alpha = 1 - (t / fadeDuration)
+
+            if alpha <= 0 then
+                self._fading = false
+                self:SetAlpha(1)
+                self:Hide()
+                return
+            end
+
+            self:SetAlpha(alpha)
             return
-        elseif p < 0 then
-            p = 0
         end
-
-        -- channels drain
-        if self._isChannel then
-            p = 1 - p
-        end
-
-        self.Status:SetMinMaxValues(0, 1)
-        self.Status:SetValue(p)
     end)
 
     return frame
